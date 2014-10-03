@@ -30,4 +30,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     p.customize ["modifyvm", :id, "--cpus", "2"]
   end
 
+  config.vm.provision :ansible do |ansible|
+    ansible.playbook = "#{HOST_PROJECT_PATH}/playbook.yml"
+    # ansible.verbose = 'vvvv'
+    # ansible.hosts = 'all'
+  end
+
 end
