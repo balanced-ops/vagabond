@@ -3,7 +3,9 @@
 
 VAGRANTFILE_API_VERSION = "2"
 
-::Dir.mkdir(host_cache_path) unless ::Dir.exist?(host_cache_path)
+HOST_PROJECT_PATH = File.expand_path('../', __FILE__)
+puts HOST_PROJECT_PATH
+GUEST_PROJECT_PATH = "/opt/"
 
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
