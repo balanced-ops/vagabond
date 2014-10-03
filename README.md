@@ -14,7 +14,7 @@ That being said, the current way to utilize `Vagabond` is to use it as submodule
 
 ## Vagabond as a `submodule` in a parent project
 
-The current way on how to use `Vagabond` is to include it as a git submodule
+The current way on how to use `Vagabond` is to include it as a git submodule.
 
 ### Updating Vagabond's submodule
 
@@ -50,6 +50,8 @@ common concern.
 
 [Balanced](https://github.com/balanced) has previously used one `Vagrantfile` per project and that didnt' scale as many
 `Vagrantfile`s were divergent and required constant updating.
+
+From this other stackoverflow question about [git repo in a subdirectory](http://stackoverflow.com/questions/22646795/how-to-properly-manage-a-git-repo-in-a-subdirectory-ignored-by-the-parent-direc/22736757#22736757), we can also see this is the general direction to take.
 
 ## Hacking on Vagabond
 
