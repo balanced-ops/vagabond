@@ -20,6 +20,8 @@ The current way on how to use `Vagabond` is to include it as a git submodule. Th
 ln -s vagabond/Vagrantfile
 ```
 
+There's an experimental `install.py` to setup this for you, but it's not done yet and I'm not sure if it's needed.
+
 ## Customizations
 
 Most developers will have custom settings, i.e. locations on where code will be stored,
