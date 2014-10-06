@@ -42,6 +42,35 @@ Projects like the below can help produce this effect:
 - https://github.com/maoueh/nugrant
 - https://github.com/PraxisLabs/vagrant-pirate
 
+### nugrant
+
+We are currently experimenting with [Nugrant](https://github.com/maoueh/nugrant). Here's an example `.vagrantuser` file:
+
+```yaml
+# -*- mode: yaml -*-
+---
+providers: {
+  virtualbox: {
+    memory: 4096,
+    cpus: 2
+  },
+  aws: {
+    region: us-west-1,
+    availability_zone: us-west-1a,
+    ssh_key: ~/.ssh/id_rsa.pub,
+    flavor_id: m3.2xlarge,
+    iam_profile_name: some-profile,
+  }
+}
+
+synced_folders:
+  - folder_1
+  - folder_2
+
+exec:
+  - "ENV['USER']"
+```
+
 ### Why is this its own repo?
 
 Borrowing from this [StackOverflow Question](http://superuser.com/questions/737416/should-a-vagrant-project-be-its-own-repo) and
