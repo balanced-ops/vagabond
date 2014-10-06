@@ -75,10 +75,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provider :virtualbox do |vb|
     overrides = get_provider_overrides("virtualbox", config)
-    vb.customize ["modifyvm", :id, "--memory",
-                  overrides.fetch("memory", "3072")]
-    vb.customize ["modifyvm", :id, "--cpus",
-                  overrides.fetch("cpus", "2")]
+    vb.customize [
+      "modifyvm", :id, "--memory", overrides.fetch("memory", "3072")
+    ]
+    vb.customize [
+      "modifyvm", :id, "--cpus", overrides.fetch("cpus", "2")
+    ]
   end
 
   config.vm.provision :ansible do |ansible|
