@@ -14,22 +14,10 @@ That being said, the current way to utilize `Vagabond` is to use it as submodule
 
 ## Vagabond as a `submodule` in a parent project
 
-The current way on how to use `Vagabond` is to include it as a git submodule.
-
-### Updating Vagabond's submodule
-
-[This trick is really cool to update git submodules](http://scribu.net/blog/git-alias-for-updating-submodules.html) and serves as a really neat way to manage and update git submodules.
-
-First, run this:
+The current way on how to use `Vagabond` is to include it as a git submodule. Then run:
 
 ```bash
-git config --global alias.up-sub '!f() { cd $1 && git checkout master && git pull && git submodule update --init --recursive; }; f
-```
-
-Then, when you can easily update to the latest `Vagabond` by running:
-
-```bash
-git up-sub vagabond
+ln -s vagabond/Vagrantfile
 ```
 
 ## Customizations
@@ -42,9 +30,10 @@ Projects like the below can help produce this effect:
 - https://github.com/maoueh/nugrant
 - https://github.com/PraxisLabs/vagrant-pirate
 
-### nugrant
+### [Nugrant](https://github.com/maoueh/nugrant)
 
-We are currently experimenting with [Nugrant](https://github.com/maoueh/nugrant). Here's an example `.vagrantuser` file:
+We are currently experimenting with [Nugrant](https://github.com/maoueh/nugrant). Here's an example
+`.vagrantuser` file that you can include in the parent directory of where you've cloned this repository.
 
 ```yaml
 # -*- mode: yaml -*-
@@ -71,7 +60,23 @@ exec:
   - "ENV['USER']"
 ```
 
-### Why is this its own repo?
+### Updating Vagabond's submodule
+
+[This trick is really cool to update git submodules](http://scribu.net/blog/git-alias-for-updating-submodules.html) and serves as a really neat way to manage and update git submodules.
+
+First, run this:
+
+```bash
+git config --global alias.up-sub '!f() { cd $1 && git checkout master && git pull && git submodule update --init --recursive; }; f
+```
+
+Then, when you can easily update to the latest `Vagabond` by running:
+
+```bash
+git up-sub vagabond
+```
+
+## Why is this its own repo?
 
 Borrowing from this [StackOverflow Question](http://superuser.com/questions/737416/should-a-vagrant-project-be-its-own-repo) and
 this [Vagrant mailing-list question](https://groups.google.com/forum/#!topic/vagrant-up/jqLVh6CKBek), it seems that this is a
