@@ -66,8 +66,8 @@ end
 
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "precise64"
-  config.vm.hostname = "localhost"
+  config.vm.box = config.user.fetch("box", "precise64")
+  config.vm.hostname = config.user.fetch("hostname", "localhost")
 
   setup_custom_synced_folders(config)
 
