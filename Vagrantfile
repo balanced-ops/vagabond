@@ -3,8 +3,7 @@
 
 VAGRANTFILE_API_VERSION = "2"
 
-HOST_PROJECT_PATH = File.expand_path('../../', __FILE__)
-puts HOST_PROJECT_PATH
+HOST_PROJECT_PATH = File.expand_path('../', __FILE__)
 GUEST_PROJECT_PATH = "/opt/"
 
 
@@ -65,6 +64,41 @@ def get_provider_overrides(provider, config)
 end
 
 
+# Customfile - POSSIBLY UNSTABLE
+#
+# Use this to insert your own (and possibly rewrite) Vagrant config
+# lines. Helpful for mapping additional drives. If a file
+# 'Customfile' exists in the same directory as this Vagrantfile, it
+# will be evaluated as ruby inline as it loads.
+#
+# **Note** that if you find yourself using a Customfile for anything
+# crazy or specifying different provisioning, then you may want to
+# consider a new Vagrantfile entirely.
+#
+# @param env_binding the calling binding object
+# @return the object
+def load_custom_file(env_binding)
+  if File.exists?(File.join(HOST_PROJECT_PATH,'Customfile')) then
+    eval(IO.read(File.join(HOST_PROJECT_PATH,'Customfile')), env_binding)
+  end
+end
+
+# Vagrant Triggers
+#
+# If the vagrant-triggers plugin is installed, we can run various scripts on Vagrant
+# state changes like `vagrant up`, `vagrant halt`, `vagrant suspend`, and `vagrant destroy`
+#
+# These scripts are run on the host machine, so we use `vagrant ssh` to tunnel back
+# into the VM and execute things. By default, each of these scripts calls db_backup
+# to create backups of all current databases. This can be overridden with custom
+# scripting. See the individual files in config/homebin/ for details.
+def setup_triggers()
+  if Vagrant.has_plugin?("vagrant-triggers")
+    # see   https://github.com/emyl/vagrant-triggers
+  end
+end
+
+
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = config.user.fetch("box", "precise64")
   config.vm.hostname = config.user.fetch("hostname", "localhost")
@@ -72,6 +106,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   setup_custom_synced_folders(config)
 
   config.vm.synced_folder "#{HOST_PROJECT_PATH}", "/vagrant"
+
+  if Vagrant.has_plugin?("vagrant-cachier")
+    # Configure cached packages to be shared between instances of the
+    # same base box.  More info @ http://fgrehm.viewdocs.io/vagrant-cachier
+    config.cache.scope = :box
+  end
 
   config.vm.provider :virtualbox do |vb|
     overrides = get_provider_overrides("virtualbox", config)
@@ -89,4 +129,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # ansible.hosts = 'all'
   end
 
+  load_custom_file(binding)
+  puts config.vm.hostname
+  setup_triggers()
 end
