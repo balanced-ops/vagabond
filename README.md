@@ -67,7 +67,7 @@ exec:
 First, run this:
 
 ```bash
-git config --global alias.up-sub '!f() { cd $1 && git checkout master && git pull && git submodule update --init --recursive; }; f
+git config --global alias.up-sub '!f() { cd $1 && git checkout master && git pull && git submodule update --init --recursive; }; f'
 ```
 
 Then, when you can easily update to the latest `Vagabond` by running:
