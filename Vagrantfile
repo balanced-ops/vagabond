@@ -16,7 +16,26 @@ end
 
 
 ##
-# This function create synced folders and link them to the
+# This function configures custom port forwarding between the host and
+# guest vm
+#
+# The yaml definition that it understands is this:
+#
+#     forwarded_ports:
+#       - guest: 80
+#         host: 8085
+#
+# @param config A vagrant config object
+# @return nil
+def setup_custom_forwarded_ports(config)
+  return unless config.user.has_key?("forwarded_ports")
+  config.user.forwarded_ports.each do |fp|
+    config.vm.network :forwarded_port, guest: fp['guest'], host: fp['host']
+  end
+end
+
+##
+# This function creates synced folders and link them to the
 # `GUEST_PROJECT_PATH` on the guest vm.
 #
 # The yaml definition that it understands is this:
@@ -103,6 +122,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = config.user.fetch("box", "precise64")
   config.vm.hostname = config.user.fetch("hostname", "localhost")
 
+  setup_custom_forwarded_ports(config)
   setup_custom_synced_folders(config)
 
   config.vm.synced_folder "#{HOST_PROJECT_PATH}", "/vagrant"
