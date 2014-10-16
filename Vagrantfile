@@ -1,10 +1,10 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-VAGRANTFILE_API_VERSION = "2"
+VAGRANTFILE_API_VERSION = '2'
 
 HOST_PROJECT_PATH = File.expand_path('../', __FILE__)
-GUEST_PROJECT_PATH = "/opt/"
+GUEST_PROJECT_PATH = '/opt/'
 
 
 begin
@@ -13,7 +13,6 @@ rescue => ex
   warn "[\e[1m\e[31mERROR\e[0m]: Please run: vagrant plugin install nugrant"
   raise
 end
-
 
 ##
 # This function configures custom port forwarding between the host and
@@ -28,7 +27,7 @@ end
 # @param config A vagrant config object
 # @return nil
 def setup_custom_forwarded_ports(config)
-  return unless config.user.has_key?("forwarded_ports")
+  return unless config.user.has_key?('forwarded_ports')
   config.user.forwarded_ports.each do |fp|
     config.vm.network :forwarded_port, guest: fp['guest'], host: fp['host']
   end
@@ -47,7 +46,7 @@ end
 # @param config A vagrant config object
 # @return nil
 def setup_custom_synced_folders(config)
-  return unless config.user.has_key?("synced_folders")
+  return unless config.user.has_key?('synced_folders')
   config.user.synced_folders.each do |host_folder|
     target = File.join(GUEST_PROJECT_PATH, File.basename(host_folder))
     puts "Syncing #{host_folder} to #{target}"
@@ -102,54 +101,82 @@ def load_custom_file(env_binding)
   end
 end
 
+
 # Vagrant Triggers
 #
-# If the vagrant-triggers plugin is installed, we can run various scripts on Vagrant
-# state changes like `vagrant up`, `vagrant halt`, `vagrant suspend`, and `vagrant destroy`
+# If the vagrant-triggers plugin is installed, we can run various
+# scripts on Vagrant state changes like `vagrant up`, `vagrant halt`,
+# `vagrant suspend`, and `vagrant destroy`
 #
-# These scripts are run on the host machine, so we use `vagrant ssh` to tunnel back
-# into the VM and execute things. By default, each of these scripts calls db_backup
-# to create backups of all current databases. This can be overridden with custom
-# scripting. See the individual files in config/homebin/ for details.
+# These scripts are run on the host machine, so we use `vagrant ssh`
+# to tunnel back into the VM and execute things. By default, each of
+# these scripts calls db_backup to create backups of all current
+# databases.
+#
+# This can be overridden with custom scripting. See the individual
+# files in config/homebin/ for details.
 def setup_triggers()
-  if Vagrant.has_plugin?("vagrant-triggers")
+  if Vagrant.has_plugin?('vagrant-triggers')
     # see   https://github.com/emyl/vagrant-triggers
   end
 end
 
 
+# Setup Defaults
+#
+# Sets up defaults for vagrant-nugrant
+#
+# @return hash with defaults
+def setup_defaults()
+  defaults = {
+    'box' => 'ubuntu/precise64',
+    'hostname' => 'localhost',
+    # providers
+    'virtualbox' => {
+      'memory' => '3072',
+      'cpus' => '2'
+    },
+    # provisioner
+    'ansible_playbook' => "#{HOST_PROJECT_PATH}/playbook.yml"
+  }
+  defaults
+end
+
+
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = config.user.fetch("box", "precise64")
-  config.vm.hostname = config.user.fetch("hostname", "localhost")
+  config.user.defaults = setup_defaults()
+
+  config.vm.box = config.user.box
+  config.vm.hostname = config.user.hostname
 
   setup_custom_forwarded_ports(config)
   setup_custom_synced_folders(config)
 
-  config.vm.synced_folder "#{HOST_PROJECT_PATH}", "/vagrant"
+  config.vm.synced_folder "#{HOST_PROJECT_PATH}", '/vagrant'
 
-  if Vagrant.has_plugin?("vagrant-cachier")
+  if Vagrant.has_plugin?('vagrant-cachier')
     # Configure cached packages to be shared between instances of the
     # same base box.  More info @ http://fgrehm.viewdocs.io/vagrant-cachier
     config.cache.scope = :box
   end
 
   config.vm.provider :virtualbox do |vb|
-    overrides = get_provider_overrides("virtualbox", config)
-    vb.customize [
-      "modifyvm", :id, "--memory", overrides.fetch("memory", "3072")
-    ]
-    vb.customize [
-      "modifyvm", :id, "--cpus", overrides.fetch("cpus", "2")
-    ]
+    vb.customize ['modifyvm', :id, '--memory', config.user.virtualbox['memory']]
+    vb.customize ['modifyvm', :id, '--cpus', config.user.virtualbox['cpus']]
   end
 
+  # how to run a playbook:
+  # ansible-playbook -i ./vagrant_ansible_inventory_default
+  #                  -u vagrant
+  #                  -c ssh
+  #                  --private-key ~/.vagrant.d/insecure_private_key
+  #                  ${ANSIBLE_PLAYBOOK}  (tags: -t)
   config.vm.provision :ansible do |ansible|
-    ansible.playbook = "#{HOST_PROJECT_PATH}/playbook.yml"
-    # ansible.verbose = 'vvvv'
+    ansible.playbook = config.user.ansible_playbook
+    ansible.verbose = 'vvvv'
     # ansible.hosts = 'all'
   end
 
   load_custom_file(binding)
-  puts config.vm.hostname
   setup_triggers()
 end
