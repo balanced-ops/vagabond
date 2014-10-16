@@ -4,6 +4,14 @@ At [Balanced](https://github.com/balanced), we use [Vagrant](https://github.com/
 
 ## Getting Started
 
+## Installing default vagrantbox
+
+```bash
+vagrant box add ubuntu/precise64 https://vagrantcloud.com/ubuntu/boxes/precise64/versions/1/providers/virtualbox.box
+```
+
+### Modifying Vagrantfile
+
 Given that [Vagrant](https://github.com/mitchellh/vagrant)'s `Vagrantfile` is just plain ruby code, it is [possible](https://github.com/purpleidea/oh-my-vagrant/blob/master/vagrant/Vagrantfile) to extend it
 in many different ways.
 
