@@ -173,7 +173,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #                  ${ANSIBLE_PLAYBOOK}  (tags: -t)
   config.vm.provision :ansible do |ansible|
     ansible.playbook = config.user.ansible_playbook
-    ansible.verbose = 'vvvv'
+    ansible.verbose = 'v'
+    # http://stackoverflow.com/q/23506911/133514
+    ansible.extra_vars = {
+      ansible_ssh_user: 'vagrant',
+      ansible_connection: 'ssh'
+    }
+    # ansible.host_key_checking = false
     # ansible.hosts = 'all'
   end
 
