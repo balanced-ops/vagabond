@@ -12,8 +12,7 @@ vagrant box add ubuntu/precise64 https://vagrantcloud.com/ubuntu/boxes/precise64
 
 ### Modifying Vagrantfile
 
-Given that [Vagrant](https://github.com/mitchellh/vagrant)'s `Vagrantfile` is just plain ruby code, it is [possible](https://github.com/purpleidea/oh-my-vagrant/blob/master/vagrant/Vagrantfile) to extend it
-in many different ways.
+Given that [Vagrant](https://github.com/mitchellh/vagrant)'s `Vagrantfile` is just plain ruby code, it is [possible](https://github.com/purpleidea/oh-my-vagrant/blob/master/vagrant/Vagrantfile) to extend it in many different ways.
 
 However, it is preferable that we try to enforce uniformity across the `Vagrantfile`, so custom ruby code for modifications is
 discouraged. If there's an addition that is welcome to the project, please open up a github issue.
@@ -40,8 +39,16 @@ Projects like the below can help produce this effect:
 
 ### [Nugrant](https://github.com/maoueh/nugrant)
 
-We are currently experimenting with [Nugrant](https://github.com/maoueh/nugrant). Here's an example
-`.vagrantuser` file that you can include in the parent directory of where you've cloned this repository.
+`Vagabond` currently is using [Nugrant](https://github.com/maoueh/nugrant) to control customizations to a `Vagrantfile`. It works by allowing a developer to place a `.vagrantfile`, that's not checked into VCS, with personalizations. The `.vagrantuser` file should be in the `$YOUR_PROJECT_PATH` folder. Here's an example tree:
+
+```bash
+$YOUR_PROJECT_PATH
+$YOUR_PROJECT_PATH/vagabond   # submodule / cloned
+$YOUR_PROJECT_PATH/Vagrantfile -> vagabond/Vagrantfile
+$YOUR_PROJECT_PATH/.vagrantuser    # <-- your personalizations **NOT IN VCS (i.e. Git, etc)**
+```
+
+### Example `.vagrantuser` file:
 
 ```yaml
 # -*- mode: yaml -*-
