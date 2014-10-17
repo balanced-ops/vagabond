@@ -4,7 +4,7 @@
 VAGRANTFILE_API_VERSION = '2'
 
 HOST_PROJECT_PATH = File.expand_path('../', __FILE__)
-GUEST_PROJECT_PATH = '/opt/'
+GUEST_PROJECT_PATH = '/home/vagrant/'
 
 
 begin
