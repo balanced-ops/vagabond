@@ -179,7 +179,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       ansible_ssh_user: 'vagrant',
       ansible_connection: 'ssh'
     }
-    # ansible.host_key_checking = false
+    ansible.host_key_checking = false
     # ansible.hosts = 'all'
   end
 
