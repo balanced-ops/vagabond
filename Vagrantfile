@@ -146,42 +146,48 @@ end
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.user.defaults = setup_defaults()
 
-  config.vm.box = config.user.box
-  config.vm.hostname = config.user.hostname
-
-  setup_custom_forwarded_ports(config)
-  setup_custom_synced_folders(config)
-
-  config.vm.synced_folder "#{HOST_PROJECT_PATH}", '/vagrant'
-
   if Vagrant.has_plugin?('vagrant-cachier')
     # Configure cached packages to be shared between instances of the
     # same base box.  More info @ http://fgrehm.viewdocs.io/vagrant-cachier
     config.cache.scope = :box
   end
 
-  config.vm.provider :virtualbox do |vb|
-    vb.customize ['modifyvm', :id, '--memory', config.user.virtualbox['memory']]
-    vb.customize ['modifyvm', :id, '--cpus', config.user.virtualbox['cpus']]
-  end
+  config.vm.box = config.user.box
 
-  # how to run a playbook:
-  # ansible-playbook -i ./vagrant_ansible_inventory_default
-  #                  -u vagrant
-  #                  -c ssh
-  #                  --private-key ~/.vagrant.d/insecure_private_key
-  #                  ${ANSIBLE_PLAYBOOK}  (tags: -t)
-  config.vm.provision :ansible do |ansible|
-    ansible.playbook = config.user.ansible_playbook
-    ansible.verbose = 'v'
-    # http://stackoverflow.com/q/23506911/133514
-    ansible.extra_vars = {
-      ansible_ssh_user: 'vagrant',
-      ansible_connection: 'ssh'
-    }
-    ansible.host_key_checking = false
-    ansible.sudo = true
-    # ansible.hosts = 'all'
+
+  config.vm.define :default, primary: true do |default|
+    default.user.defaults = config.user.defaults
+    default.vm.hostname = default.user.hostname
+
+    setup_custom_forwarded_ports(default)
+    setup_custom_synced_folders(default)
+
+    default.vm.synced_folder "#{HOST_PROJECT_PATH}", '/vagrant'
+
+    default.vm.provider :virtualbox do |vb|
+      vb.customize ['modifyvm', :id, '--memory', default.user.virtualbox['memory']]
+      vb.customize ['modifyvm', :id, '--cpus', default.user.virtualbox['cpus']]
+    end
+
+    # how to run a playbook:
+    # ansible-playbook -i ./vagrant_ansible_inventory_default
+    #                  -u vagrant
+    #                  -c ssh
+    #                  --private-key ~/.vagrant.d/insecure_private_key
+    #                  ${ANSIBLE_PLAYBOOK}  (tags: -t)
+    default.vm.provision :ansible do |ansible|
+      ansible.playbook = config.user.ansible_playbook
+      ansible.verbose = 'v'
+      # http://stackoverflow.com/q/23506911/133514
+      ansible.extra_vars = {
+          'ansible_ssh_user' => 'vagrant',
+          'ansible_connection' =>'ssh'
+      }
+      ansible.host_key_checking = false
+      ansible.sudo = true
+      # ansible.hosts = 'all'
+    end
+
   end
 
   load_custom_file(binding)
