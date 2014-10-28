@@ -29,7 +29,7 @@ end
 def setup_custom_forwarded_ports(config)
   return unless config.user.has_key?('forwarded_ports')
   config.user.forwarded_ports.each do |fp|
-    config.vm.network :forwarded_port, guest: fp['guest'], host: fp['host']
+    config.vm.network :forwarded_port, {:guest => fp['guest'], :host => fp['host']}
   end
 end
 
@@ -155,7 +155,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = config.user.box
 
 
-  config.vm.define :default, primary: true do |default|
+  config.vm.define :default, {:primary => true} do |default|
     default.user.defaults = config.user.defaults
     default.vm.hostname = default.user.hostname
 
